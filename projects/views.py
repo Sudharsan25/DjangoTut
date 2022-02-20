@@ -1,5 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.test import tag
+from .models import Project
 
 projectsList = [
     {
@@ -21,12 +23,12 @@ projectsList = [
 
 # Create your views here.
 def projects(request):
-    context= {"projects":projectsList}
+    projects = Project.objects.all()
+    context= {"projects":projects}
     return render(request, 'projects/projects.html',context)
 
 def project(request,pk):
-    projectObj = None
-    for i in projectsList:
-        if i['id'] == str(pk):
-            projectObj = i;
-    return render(request, 'projects/single-project.html', {"project":projectObj})
+    projectObj = Project.objects.get(id=pk)
+    tags = projectObj.tags.all()
+    context = {"project":projectObj, "tags":tags}
+    return render(request, 'projects/single-project.html', context)
